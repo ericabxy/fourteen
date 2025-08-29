@@ -11,10 +11,7 @@ class GuardianContent:
 
     def additional_effect(self, text):
         tag = self.soup.new_tag('additional-effect')
-        if re.match('^Grants ', text):
-            tag.append(self.grants( text ))
-        else:
-            tag.string = text
+        tag.string = text
         return tag
 
     def bullet(self, text):
@@ -29,11 +26,18 @@ class GuardianContent:
 
     def deal_damage(self, text):
         self.primary = self.soup.new_tag('deal-damage')
-        affinity = re.search(r'Deals \w+ damage', text).group()[6:-7]
+        aspect = re.search(r'Deals \w+ damage', text).group()[6:-7]
         potency = re.search(r'with a potency of \d+', text).group()
         potency = re.search(r'\d+', potency).group()
-        self.primary['affinity'] = affinity
+        self.primary['aspect'] = aspect
         self.primary['potency'] = potency
+        if 'to all nearby enemies' in text:
+            self.primary['area'] = 'circle'
+        elif 'to all enemies in a straight line before you' in text:
+            self.primary['area'] = 'line'
+        elif 'to all enemies in a cone before you' in text:
+            self.primary['area'] = 'cone'
+        self.primary.string = text
 
     def deliver_attack(self, text):
         self.primary = self.soup.new_tag('deliver-attack')
@@ -46,27 +50,29 @@ class GuardianContent:
 
     def duration(self, text):
         if len(re.findall(r'\d+', text)) > 1:
-            n = int(float(re.findall(r'\d+\.\d+', text)[0]) * 1000)
+            return int(float(re.findall(r'\d+\.\d+', text)[0]) * 1000)
         elif len(re.findall(r'\d+', text)) > 0:
-            n = int(re.findall(r'\d+', text)[0]) * 1000
+            return int(re.findall(r'\d+', text)[0]) * 1000
         else:
-            n = 0
-        self.primary['duration'] = n
+            return 0
+
+    def extend_duration(self, text):
+        tag = self.soup.new_tag('extend-duration')
+        effect = re.search(r'Extends \w++ duration', text).group()[8:-9]
+        by = re.search(r'duration by \d+s', text).group()[12:-1]
+        maximum = re.search(r'to a maximum of \d+s', text).group()[16:-1]
+        tag['extend'] = int(by) * 1000
+        tag['maximum'] = int(maximum) * 1000
+        tag.string = effect 
+        return tag
 
     def granted_effect(self, text):
         tag = self.soup.new_tag('granted-effect')
         tag.string = text
         return tag
-
-    def grants(self, text):
-        tag = self.soup.new_tag('grant')
-        grant = text[7:]
-        for reg in re.findall('Grants \w+,', text):
-            grant = reg[7:-1]
-        for reg in re.findall('Grants \w+ to target', text):
-            grant = reg[7:-10]
-        tag.string = grant
-        return tag
+    
+    def potency(self, text):
+        return re.search(r'\d+', text).group()
 
     def primary_effect(self, text):
         x = text.find('Gauge Cost: ')
@@ -79,7 +85,12 @@ class GuardianContent:
             tag = self.soup.new_tag('primary-effect')
             tag.string = text
             self.primary = tag
-        return tag 
+        return tag
+
+    def share_recast(self, text):
+        tag = self.soup.new_tag('share-recast')
+        tag.string = text
+        return tag
 
     def table_of_contents(self):
         table_of_contents = []
@@ -114,7 +125,16 @@ class GuardianContent:
                 self.deliver_attack(text)
                 table_of_contents.append(self.primary)
             elif text[:10] == 'Duration: ':
-                self.duration(text)
+                table_of_contents[-1]['duration'] = self.duration(text)
+            elif text[:7] == 'Extends':
+                tag = self.extend_duration(text)
+                table_of_contents.append(tag)
+            elif text[:9] == 'Potency: ':
+                tag = table_of_contents[-1]
+                tag['potency'] = self.potency(text)
+            elif text[:21] == 'Shares a recast timer':
+                tag = self.share_recast(text)
+                table_of_contents.append(tag)
             else:
                 tag = self.primary_effect(text)
                 table_of_contents.append(tag)

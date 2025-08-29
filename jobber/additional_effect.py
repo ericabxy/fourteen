@@ -1,9 +1,8 @@
 import re
 
 from bs4 import BeautifulSoup
-from .guardian_content import GuardianContent
 
-class AdditionalEffect(GuardianContent):
+class AdditionalEffect():
     def __init__(self):
         self.soup = BeautifulSoup('<html>Soup</html>', 'html.parser')
         self.root = self.soup.new_tag('additional-effect')
