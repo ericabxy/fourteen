@@ -2,10 +2,10 @@ import re
 
 from bs4 import BeautifulSoup
 
-from .effect import Effect
+from .guardian_effect import GuardianEffect
 
-class AdditionalEffect(Effect):
+class AdditionalEffect(GuardianEffect):
     def __init__(self, text):
-        super().__init__('additional-effect')
+        super().__init__('additional-effect', '')
         self.root = self.soup.find(name='additional-effect')
         self.root.string = text

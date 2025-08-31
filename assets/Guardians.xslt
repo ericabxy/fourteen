@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xsl:version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <head>
+  <title>Character</title>
   <style>
     dt {
       color: limegreen;
+    }
+    dd img, dd span {
+      vertical-align: middle;
+    }
+    dl.acquired dt {
+      color: cornsilk;
     }
   </style>
 </head>
@@ -66,16 +73,38 @@
       </tr>
     </table>
     <hr/>
-    <p class="description">
+    <div class="description">
       <xsl:variable name="range" select="@range"/>
       <xsl:variable name="radius" select="@radius"/>
       <xsl:for-each select="primary-effect">
-        <xsl:value-of select="current()"/><br/>
+        <p>
+          <xsl:value-of select="current()"/>
+        </p>
+        <xsl:if test="@area or @attack or @damage or @potency or @target">
+          <dl>
+            <xsl:if test="@area">
+              <dt style="color:cornflowerblue">Area</dt>
+              <dd><xsl:value-of select="@area"/></dd>
+            </xsl:if>
+            <xsl:if test="@attack">
+              <dt style="color:cornflowerblue">Attack Type</dt>
+              <dd><xsl:value-of select="@attack"/></dd>
+            </xsl:if>
+            <xsl:if test="@damage">
+              <dt style="color:cornflowerblue">Damage Aspect</dt>
+              <dd><xsl:value-of select="@damage"/></dd>
+            </xsl:if>
+            <xsl:if test="@potency">
+              <dt style="color:cornflowerblue">Potency</dt>
+              <dd><xsl:value-of select="@potency"/></dd>
+            </xsl:if>
+            <xsl:if test="@target">
+              <dt style="color:cornflowerblue">Target</dt>
+              <dd><xsl:value-of select="@target"/></dd>
+            </xsl:if>
+          </dl>
+        </xsl:if>
         <dl>
-          <xsl:if test="@potency">
-            <dt>Potency</dt>
-            <dd><xsl:value-of select="@potency"/></dd>
-          </xsl:if>
           <xsl:if test="@duration">
             <dt>Duration</dt>
             <dd><xsl:value-of select="@duration div 1000"/>s</dd>
@@ -163,7 +192,13 @@
           <dd><xsl:value-of select="@duration div 1000"/>s</dd>
         </dl>
       </xsl:for-each>
-    </p><!-- description -->
+    </div><!-- description -->
+    <xsl:for-each select="./named-potency">
+      <dl>
+        <dt><xsl:value-of select="current()"/> Potency</dt>
+        <dd><xsl:value-of select="@potency"/></dd>
+      </dl>
+    </xsl:for-each>
     <xsl:for-each select="./combo-action">
       <dl>
         <dt>Combo Action</dt>
@@ -176,6 +211,10 @@
       <dl>
         <dt>Combo Bonus</dt>
         <dd><xsl:value-of select="current()"/></dd>
+        <xsl:if test="@cure-potency">
+          <dt>Cure Potency</dt>
+          <dd><xsl:value-of select="@cure-potency"/></dd>
+        </xsl:if>
         <xsl:if test="@duration">
           <dt>Duration</dt>
           <dd><xsl:value-of select="@duration div 1000"/>s</dd>
@@ -214,19 +253,19 @@
     </xsl:for-each>
     <xsl:for-each select="./named-effect">
       <dl>
-        <dt>Named Effect</dt>
-        <dd><xsl:value-of select="current()"/></dd>
+        <dt><xsl:value-of select="./name"/> Effect</dt>
+        <dd><xsl:value-of select="./description"/></dd>
         <xsl:if test="@potency">
           <dt>Potency</dt>
           <dd><xsl:value-of select="@potency"/></dd>
         </xsl:if>
-        <xsl:if test="@duration">
-          <dt>Duration</dt>
-          <dd><xsl:value-of select="@duration div 1000"/>s</dd>
-        </xsl:if>
         <xsl:if test="@cure-potency">
           <dt>Cure Potency</dt>
           <dd><xsl:value-of select="@cure-potency"/></dd>
+        </xsl:if>
+        <xsl:if test="@duration">
+          <dt>Duration</dt>
+          <dd><xsl:value-of select="@duration div 1000"/>s</dd>
         </xsl:if>
       </dl>
     </xsl:for-each>
@@ -243,7 +282,7 @@
           <xsl:value-of select="current()"/>
         </span>
         duration by
-        <xsl:value-of select="@extend div 1000"/>s
+        <span style="color:black;"><xsl:value-of select="@extend div 1000"/>s</span>
         to a maximum of
         <xsl:value-of select="@maximum div 1000"/>s.
       </div>
@@ -253,6 +292,11 @@
         <xsl:value-of select="current()"/>
       </div>
     </xsl:for-each>
+    <xsl:for-each select="./limitation">
+      <p>
+        <xsl:value-of select="current()"/>
+      </p>
+    </xsl:for-each>
     <xsl:if test="./bullet-point">
       <ul>
       <xsl:for-each select="./bullet-point">
@@ -260,11 +304,13 @@
       </xsl:for-each>
       </ul>
     </xsl:if>
-    <dl>
-      <dt style="color:cornsilk;">Acquired</dt>
+    <dl class="acquired">
+      <dt>Acquired</dt>
       <dd>
-        <xsl:value-of select="./affinity"/>
-        Lv. <xsl:value-of select="@level"/>
+        <img src="assets/Knight.png"/>
+        <span>
+          Lv. <xsl:value-of select="@level"/>
+        </span>
       </dd>
     </dl>
   </div>

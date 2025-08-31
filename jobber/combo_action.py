@@ -1,11 +1,11 @@
 import re
 
 from bs4 import BeautifulSoup
-from .effect import Effect
+from .guardian_effect import GuardianEffect
 
-class ComboAction(Effect):
+class ComboAction(GuardianEffect):
     def __init__(self, text):
-        super().__init__('combo-action')
+        super().__init__('combo-action', '')
         self.root = self.soup.find(name='combo-action')
         self.root.string = text
 
@@ -16,4 +16,4 @@ class ComboAction(Effect):
         self.root['duration'] = self.milliseconds(text)
 
     def set_potency(self, text):
-        self.root['potency'] = self.number(text)
+        self.root['potency'] = self.parse_integer(text)

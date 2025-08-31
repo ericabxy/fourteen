@@ -19,8 +19,8 @@ class GuardianSkill(Skill):
         return skill
 
     def affinity(self):
-        #['data-tooltip']
-        return self.src.find(class_='js__tooltip')['data-tooltip']
+        if self.src.find(class_='js__tooltip'):
+            return self.src.find(class_='js__tooltip')['data-tooltip']
 
     def classification(self):
         return super().text('classification')

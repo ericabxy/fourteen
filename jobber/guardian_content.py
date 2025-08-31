@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from .additional_effect import AdditionalEffect
 from .combo_action import ComboAction
 from .combo_bonus import ComboBonus
-from .guardian_effect import GuardianEffect
 from .named_cost import NamedCost
 from .named_effect import NamedEffect
+from .named_potency import NamedPotency
 from .primary_effect import PrimaryEffect
 
 class GuardianContent:
@@ -87,6 +87,10 @@ class GuardianContent:
             elif text[:19] == 'Additional Effect: ':
                 current_effect = AdditionalEffect(text[19:])
                 table_of_contents.append(current_effect.soup)
+            elif text[:20] == 'Can only be executed':
+                tag = self.soup.new_tag('limitation')
+                tag.string = text
+                table_of_contents.append(tag)
             elif re.search(r'\w++ Effect:', text):
                 current_effect = NamedEffect(text)
                 table_of_contents.append(current_effect.soup)
@@ -103,6 +107,9 @@ class GuardianContent:
                 current_effect.set_potency(text[15:])
             elif text[:14] == 'Cure Potency: ':
                 current_effect.set_cure_potency(text[14:])
+            elif re.search(r'\w++ Potency:', text):
+                current_effect = NamedPotency(text)
+                table_of_contents.append(current_effect.soup)
             elif re.search(r'Deals \w+ damage', text):
                 current_effect.deal_damage(text)
                 table_of_contents.append(current_effect.soup)

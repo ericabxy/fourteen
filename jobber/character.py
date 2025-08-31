@@ -29,9 +29,9 @@ class Character:
                 action['recast'] = time_to_recast
             if mpcost > 0:
                 action['mpcost'] = mpcost
-            affinity = self.soup.new_tag('affinity')
-            affinity.string = skill0.affinity()
-            action.append(affinity)
+            #affinity = self.soup.new_tag('affinity')
+            #affinity.string = skill0.affinity()
+            #action.append(affinity)
             name = self.soup.new_tag('name')
             name.string = skill0.action_name()
             action.append(name)
