@@ -68,7 +68,11 @@ class GuardianContent:
 
     def granted_effect(self, text):
         tag = self.soup.new_tag('granted-effect')
-        tag.string = text
+        x, y = re.search(r'\w++ Effect: ', text).span()
+        tag.append(self.soup.new_tag( 'named' ))
+        tag.named.string = text[:y-9]
+        tag.append(self.soup.new_tag( 'description' ))
+        tag.description.string = text[y:]
         return tag
     
     def potency(self, text):
@@ -105,6 +109,9 @@ class GuardianContent:
             elif text[:19] == 'Additional Effect: ':
                 tag = self.additional_effect(text[19:])
                 table_of_contents.append(tag)
+            elif re.search(r'\w++ Effect:', text):
+                tag = self.granted_effect(text)
+                table_of_contents.append(tag)
             elif text[:14] == 'Combo Action: ':
                 self.combination = GuardianCombo()
                 self.combination.combo_action(text[14:])
@@ -126,7 +133,7 @@ class GuardianContent:
                 table_of_contents.append(self.primary)
             elif text[:10] == 'Duration: ':
                 table_of_contents[-1]['duration'] = self.duration(text)
-            elif text[:7] == 'Extends':
+            elif re.search(r'Extends \w++ duration', text):
                 tag = self.extend_duration(text)
                 table_of_contents.append(tag)
             elif text[:9] == 'Potency: ':

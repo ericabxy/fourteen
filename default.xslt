@@ -26,7 +26,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </span>
-      <span style="float:right;" class="radius">
+      <span style="float:right; padding-right:1em;" class="radius">
         Radius
         <xsl:choose>
           <xsl:when test="@radius">
@@ -226,7 +226,7 @@
     </xsl:for-each>
     <xsl:for-each select="./granted-effect">
       <dl>
-        <dt><xsl:value-of select="./name"/> Effect</dt>
+        <dt><xsl:value-of select="./named"/> Effect</dt>
         <dd><xsl:value-of select="./description"/></dd>
         <xsl:if test="@potency">
           <dt>Potency</dt>
@@ -272,6 +272,13 @@
       </xsl:for-each>
       </ul>
     </xsl:if>
+    <dl>
+      <dt style="color:cornsilk;">Acquired</dt>
+      <dd>
+        <xsl:value-of select="./affinity"/>
+        Lv. <xsl:value-of select="@level"/>
+      </dd>
+    </dl>
   </div>
 </xsl:for-each>
 </body>

@@ -18,6 +18,10 @@ class GuardianSkill(Skill):
             skill = skill[:-18].strip()
         return skill
 
+    def affinity(self):
+        #['data-tooltip']
+        return self.src.find(class_='js__tooltip')['data-tooltip']
+
     def classification(self):
         return super().text('classification')
 
