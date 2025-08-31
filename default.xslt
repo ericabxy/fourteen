@@ -84,6 +84,10 @@
             <dt>Cure Potency</dt>
             <dd><xsl:value-of select="@cure-potency"/></dd>
           </xsl:if>
+          <xsl:if test="@maximum-charges">
+            <dt>Maximum Charges</dt>
+            <dd><xsl:value-of select="@maximum-charges"/></dd>
+          </xsl:if>
         </dl>
       </xsl:for-each>
       <xsl:for-each select="deliver-attack">
@@ -160,38 +164,22 @@
         </dl>
       </xsl:for-each>
     </p><!-- description -->
-    <xsl:for-each select="./combination">
+    <xsl:for-each select="./combo-action">
       <dl>
-      <xsl:for-each select="./combo-action">
-          <dt>Combo Action</dt>
-          <dd style="color:orange;"><xsl:value-of select="current()"/></dd>
-          <dt>Combo Potency</dt>
-          <dd><xsl:value-of select="./@potency"/></dd>
-      </xsl:for-each>
-      <xsl:for-each select="./combo-bonus">
-          <dt>Combo Bonus</dt>
-            <xsl:choose>
-              <xsl:when test="grant">
-                <dd>
-                  Grants
-                  <span style="color:yellow;">
-                    <xsl:value-of select="grant"/>
-                  </span>
-                </dd>
-              </xsl:when>
-              <xsl:otherwise>
-                <dd><xsl:value-of select="current()"/></dd>
-              </xsl:otherwise>
-            </xsl:choose>
-          <xsl:if test="@cure">
-            <dt>Cure Potency</dt>
-            <dd><xsl:value-of select="@cure"/></dd>
-          </xsl:if>
-          <xsl:if test="@duration">
-            <dt>Duration</dt>
-            <dd><xsl:value-of select="@duration div 1000"/>s</dd>
-          </xsl:if>
-      </xsl:for-each>
+        <dt>Combo Action</dt>
+        <dd style="color:orange;"><xsl:value-of select="current()"/></dd>
+        <dt>Combo Potency</dt>
+        <dd><xsl:value-of select="./@potency"/></dd>
+      </dl>
+    </xsl:for-each>
+    <xsl:for-each select="./combo-bonus">
+      <dl>
+        <dt>Combo Bonus</dt>
+        <dd><xsl:value-of select="current()"/></dd>
+        <xsl:if test="@duration">
+          <dt>Duration</dt>
+          <dd><xsl:value-of select="@duration div 1000"/>s</dd>
+        </xsl:if>
       </dl>
     </xsl:for-each>
     <xsl:for-each select="./additional-effect">
@@ -224,10 +212,10 @@
         </xsl:if>
       </dl>
     </xsl:for-each>
-    <xsl:for-each select="./granted-effect">
+    <xsl:for-each select="./named-effect">
       <dl>
-        <dt><xsl:value-of select="./named"/> Effect</dt>
-        <dd><xsl:value-of select="./description"/></dd>
+        <dt>Named Effect</dt>
+        <dd><xsl:value-of select="current()"/></dd>
         <xsl:if test="@potency">
           <dt>Potency</dt>
           <dd><xsl:value-of select="@potency"/></dd>
@@ -242,7 +230,7 @@
         </xsl:if>
       </dl>
     </xsl:for-each>
-    <xsl:for-each select="./job-gauge">
+    <xsl:for-each select="./named-cost">
       <dl>
         <dt><xsl:value-of select="current()"/> Cost</dt>
         <dd><xsl:value-of select="@cost"/></dd>

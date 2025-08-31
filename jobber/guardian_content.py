@@ -1,8 +1,14 @@
 import re
 
 from bs4 import BeautifulSoup
-from .guardian_combo import GuardianCombo
+
+from .additional_effect import AdditionalEffect
+from .combo_action import ComboAction
+from .combo_bonus import ComboBonus
 from .guardian_effect import GuardianEffect
+from .named_cost import NamedCost
+from .named_effect import NamedEffect
+from .primary_effect import PrimaryEffect
 
 class GuardianContent:
     def __init__(self, tag):
@@ -18,35 +24,6 @@ class GuardianContent:
         tag = self.soup.new_tag('bullet-point')
         tag.string = text
         return tag
-
-    def cure_potency(self, text):
-        tag = self.soup.new_tag('cure-potency')
-        tag.string = text
-        return tag
-
-    def deal_damage(self, text):
-        self.primary = self.soup.new_tag('deal-damage')
-        aspect = re.search(r'Deals \w+ damage', text).group()[6:-7]
-        potency = re.search(r'with a potency of \d+', text).group()
-        potency = re.search(r'\d+', potency).group()
-        self.primary['aspect'] = aspect
-        self.primary['potency'] = potency
-        if 'to all nearby enemies' in text:
-            self.primary['area'] = 'circle'
-        elif 'to all enemies in a straight line before you' in text:
-            self.primary['area'] = 'line'
-        elif 'to all enemies in a cone before you' in text:
-            self.primary['area'] = 'cone'
-        self.primary.string = text
-
-    def deliver_attack(self, text):
-        self.primary = self.soup.new_tag('deliver-attack')
-        if len(re.findall(r'\d+', text)) > 0:
-            potency = int(re.findall(r'\d+', text)[0])
-        else:
-            potency = 0
-        self.primary['potency'] = potency
-        self.primary.string = text
 
     def duration(self, text):
         if len(re.findall(r'\d+', text)) > 1:
@@ -99,6 +76,7 @@ class GuardianContent:
     def table_of_contents(self):
         table_of_contents = []
         lines = str(self.src.find_all(class_='content')[0]).split('<br/>')
+        current_effect = PrimaryEffect()
         for line in lines:
             soup = BeautifulSoup(line, 'html.parser')
             text = soup.text.strip()
@@ -107,42 +85,44 @@ class GuardianContent:
                 tag = self.bullet(text[1:])
                 table_of_contents.append(tag)
             elif text[:19] == 'Additional Effect: ':
-                tag = self.additional_effect(text[19:])
-                table_of_contents.append(tag)
+                current_effect = AdditionalEffect(text[19:])
+                table_of_contents.append(current_effect.soup)
             elif re.search(r'\w++ Effect:', text):
-                tag = self.granted_effect(text)
-                table_of_contents.append(tag)
+                current_effect = NamedEffect(text)
+                table_of_contents.append(current_effect.soup)
+            elif re.search(r'\w++ Gauge Cost:', text):
+                current_effect = NamedCost(text)
+                table_of_contents.append(current_effect.soup)
             elif text[:14] == 'Combo Action: ':
-                self.combination = GuardianCombo()
-                self.combination.combo_action(text[14:])
-                table_of_contents.append(self.combination.soup)
+                current_effect = ComboAction(text[14:])
+                table_of_contents.append(current_effect.soup)
             elif text[:13] == 'Combo Bonus: ':
-                self.combination.combo_bonus(text[13:])
+                current_effect = ComboBonus(text[13:])
+                table_of_contents.append(current_effect.soup)
             elif text[:15] == 'Combo Potency: ':
-                self.combination.combo_potency(text[15:])
+                current_effect.set_potency(text[15:])
             elif text[:14] == 'Cure Potency: ':
-                if hasattr(self, 'combination'):
-                    self.combination.cure_potency(text[14:])
-                else:
-                    self.cure_potency(text[14:])
+                current_effect.set_cure_potency(text[14:])
             elif re.search(r'Deals \w+ damage', text):
-                self.deal_damage(text)
-                table_of_contents.append(self.primary)
+                current_effect.deal_damage(text)
+                table_of_contents.append(current_effect.soup)
             elif text[:8] == 'Delivers':
-                self.deliver_attack(text)
-                table_of_contents.append(self.primary)
+                current_effect.deliver_attack(text)
+                table_of_contents.append(current_effect.soup)
             elif text[:10] == 'Duration: ':
-                table_of_contents[-1]['duration'] = self.duration(text)
+                current_effect.set_duration(text[10:])
             elif re.search(r'Extends \w++ duration', text):
                 tag = self.extend_duration(text)
                 table_of_contents.append(tag)
+            elif text[:17] == 'Maximum Charges: ':
+                current_effect.set_maximum_charges(text)
             elif text[:9] == 'Potency: ':
-                tag = table_of_contents[-1]
-                tag['potency'] = self.potency(text)
+                current_effect.set_potency(text)
             elif text[:21] == 'Shares a recast timer':
                 tag = self.share_recast(text)
                 table_of_contents.append(tag)
             else:
-                tag = self.primary_effect(text)
-                table_of_contents.append(tag)
+                current_effect = PrimaryEffect()
+                current_effect.set_description(text)
+                table_of_contents.append(current_effect.soup)
         return table_of_contents

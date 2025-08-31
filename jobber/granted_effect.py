@@ -14,3 +14,4 @@ class GrantedEffect(GuardianEffect):
         for reg in re.findall('Grants \w+ to target', text):
             effect = reg[7:-10]
         super().__init__(name, effect)
+        self.soup.find()['grant'] = True
