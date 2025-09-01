@@ -39,4 +39,43 @@
    Increases Job Gauge by 20
   </combo-bonus>
  </weaponskill>
+ <weaponskill level="6" radius="5" recast="2500">
+  <name>
+   Area Attack I
+  </name>
+  <primary-effect area="circle" potency="100" target="nearby enemies">
+   Delivers an attack with a potency of 100 to all nearby enemies.
+  </primary-effect>
+  <additional-effect>
+   Increased enmity
+  </additional-effect>
+ </weaponskill>
+ <weaponskill level="40" radius="5" recast="2500">
+  <name>
+   Area Attack II
+  </name>
+  <primary-effect area="circle" potency="100" target="nearby enemies">
+   Delivers an attack with a potency of 100 to all nearby enemies.
+  </primary-effect>
+  <additional-effect>
+   Increased enmity
+  </additional-effect>
+  <combo-action potency="200">
+   Area Attack I
+  </combo-action>
+  <combo-bonus>
+   Restores MP
+  </combo-bonus>
+  <combo-bonus>
+   Grants Increased Burst
+  </combo-bonus>
+  <additional-effect duration="30000">
+   <name>
+    Increased Burst
+   </name>
+   <description>
+    Allows next Target Burst Attack or Area Burst Attack to be cast immediately with increased potency
+   </description>
+  </additional-effect>
+ </weaponskill>
 </character>

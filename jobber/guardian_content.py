@@ -6,7 +6,6 @@ from .additional_effect import AdditionalEffect
 from .combo_action import ComboAction
 from .combo_bonus import ComboBonus
 from .named_cost import NamedCost
-from .named_effect import NamedEffect
 from .named_potency import NamedPotency
 from .primary_effect import PrimaryEffect
 
@@ -43,15 +42,6 @@ class GuardianContent:
         tag.string = effect 
         return tag
 
-    def granted_effect(self, text):
-        tag = self.soup.new_tag('granted-effect')
-        x, y = re.search(r'\w++ Effect: ', text).span()
-        tag.append(self.soup.new_tag( 'named' ))
-        tag.named.string = text[:y-9]
-        tag.append(self.soup.new_tag( 'description' ))
-        tag.description.string = text[y:]
-        return tag
-    
     def potency(self, text):
         return re.search(r'\d+', text).group()
 
@@ -84,15 +74,12 @@ class GuardianContent:
             if text[:1] == '※':
                 tag = self.bullet(text[1:])
                 table_of_contents.append(tag)
-            elif text[:19] == 'Additional Effect: ':
-                current_effect = AdditionalEffect(text[19:])
-                table_of_contents.append(current_effect.soup)
             elif text[:20] == 'Can only be executed':
                 tag = self.soup.new_tag('limitation')
                 tag.string = text
                 table_of_contents.append(tag)
             elif re.search(r'\w++ Effect:', text):
-                current_effect = NamedEffect(text)
+                current_effect = AdditionalEffect(text)
                 table_of_contents.append(current_effect.soup)
             elif re.search(r'\w++ Gauge Cost:', text):
                 current_effect = NamedCost(text)
