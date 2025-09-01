@@ -1,0 +1,42 @@
+<?xml-stylesheet type="text/xml" href="files/Guardians.xslt"?>
+<character>
+ <weaponskill level="1" range="3" recast="2500">
+  <name>
+   Main Attack I
+  </name>
+  <primary-effect potency="200">
+   Delivers an attack with a potency of 200.
+  </primary-effect>
+ </weaponskill>
+ <weaponskill level="5" range="3" recast="2500">
+  <name>
+   Main Attack II
+  </name>
+  <primary-effect potency="100">
+   Delivers an attack with a potency of 100.
+  </primary-effect>
+  <combo-action potency="300">
+   Main Attack I
+  </combo-action>
+  <combo-bonus>
+   Restores MP
+  </combo-bonus>
+ </weaponskill>
+ <weaponskill level="25" range="3" recast="2500">
+  <name>
+   Main Attack III
+  </name>
+  <primary-effect potency="100">
+   Delivers an attack with a potency of 100.
+  </primary-effect>
+  <combo-action potency="400">
+   Main Attack II
+  </combo-action>
+  <combo-bonus cure-potency="300">
+   Restores own HP
+  </combo-bonus>
+  <combo-bonus>
+   Increases Job Gauge by 20
+  </combo-bonus>
+ </weaponskill>
+</character>

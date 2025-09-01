@@ -1,8 +1,6 @@
 # Dev artifacts
-public/*
 *.html
-*.xml
-cgi-bin/*
+/*.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

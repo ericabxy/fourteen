@@ -8,5 +8,5 @@ with open(sys.argv[1]) as file:
     html_doc = file.read()
     new_character = Character(html_doc)
     new_character.set_skills_from_id()
-    print('<?xml-stylesheet type="text/xml" href="assets/Guardians.xslt"?>')
+    print('<?xml-stylesheet type="text/xml" href="files/Guardians.xslt"?>')
     print(new_character.root.prettify( ))

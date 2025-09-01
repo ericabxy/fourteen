@@ -96,7 +96,10 @@
             </xsl:if>
             <xsl:if test="@potency">
               <dt style="color:cornflowerblue">Potency</dt>
-              <dd><xsl:value-of select="@potency"/></dd>
+              <dd>
+                with a potency of
+                <xsl:value-of select="@potency"/>
+              </dd>
             </xsl:if>
             <xsl:if test="@target">
               <dt style="color:cornflowerblue">Target</dt>
@@ -307,7 +310,7 @@
     <dl class="acquired">
       <dt>Acquired</dt>
       <dd>
-        <img src="assets/Knight.png"/>
+        <img src="files/Fighter.png"/>
         <span>
           Lv. <xsl:value-of select="@level"/>
         </span>
